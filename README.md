@@ -1,27 +1,26 @@
-Modal CRUD Gii templates for Yii2 framework
-=================
+# Modal CRUD Gii templates for Yii2 framework
+
+[![Latest Version](https://img.shields.io/packagist/v/conquer/gii-modal.svg)](https://packagist.org/packages/conquer/gii-modal)
+[![Total Downloads](https://img.shields.io/packagist/dt/conquer/gii-modal.svg)](https://packagist.org/packages/conquer/gii-modal)
+[![License](https://img.shields.io/packagist/l/conquer/gii-modal.svg)](LICENSE)
 
 ## Description
 
 This generator generates, controller and views that allow you to edit and view the data in the modal windows.
 Uses the Bootstrap Modals. 
 
+## Requirements
+
+- PHP 7.4 or 8.x
+- Yii 2.0
+
 ## Installation
 
-The preferred way to install this extension is through [composer](http://getcomposer.org/download/). 
+Install the extension via [Composer](https://getcomposer.org):
 
-To install, either run
-
+```bash
+composer require conquer/gii-modal:^1.2
 ```
-$ php composer.phar require conquer/gii-modal "*"
-```
-or add
-
-```
-"conquer/gii-modal": "*"
-```
-
-to the ```require``` section of your `composer.json` file.
 
 ## Usage
 
@@ -46,4 +45,4 @@ if (YII_ENV_DEV) {
 
 ## License
 
-**conquer/gii-modal** is released under the MIT License. See the bundled `LICENSE.md` for details.
+**conquer/gii-modal** is released under the MIT License. See the bundled [`LICENSE`](LICENSE) for details.
