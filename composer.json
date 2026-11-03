@@ -1,7 +1,12 @@
 {
     "name": "conquer/gii-modal",
     "description": "Yii2 gii modal",
-    "keywords": ["yii2", "extension", "gii", "modal"],
+    "keywords": [
+        "yii2",
+        "extension",
+        "gii",
+        "modal"
+    ],
     "homepage": "https://github.com/borodulin/yii2-gii-modal",
     "type": "yii2-extension",
     "license": "MIT",
@@ -14,16 +19,16 @@
     ],
     "extra": {
         "branch-alias": {
-          "dev-master": "1.1.2.x-dev"
+            "dev-master": "1.1.2.x-dev"
         }
     },
     "require": {
-    	"php": ">=5.4.0",
-    	"yiisoft/yii2-gii": "~2.0"
+        "php": "^7.4 || ^8.0",
+        "yiisoft/yii2-gii": "~2.0"
     },
-	"autoload": {
-		"psr-4": {
-			"conquer\\gii\\": ""
-		}
-	}
+    "autoload": {
+        "psr-4": {
+            "conquer\\gii\\": ""
+        }
+    }
 }
