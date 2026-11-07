@@ -1,63 +1,90 @@
-$(function(){
-    $(document).on('click', '.show-modal',  function(){
-        var self = $(this),
-        	target = $(self.attr('data-target')),
-            ajax_url = self.attr('data-url') || self.attr('href'),
-            header = self.attr('data-header')||'';
-		var h4 = target.find('.modal-header').find('h4');
-		if (h4.length === 0) {
-		    $('<h4>'+header+'</h4>').appendTo(target.find('.modal-header'));
-		} else {
-			h4.text(header);
-		}
-        if (ajax_url) {
-        	var body = target.modal('show').find('.modal-body').empty();
-        	$.ajax({
-    			url: ajax_url,
-    			success: function (response) {
-    				body.html(response);
-    			},
-    			error: function (jqXHR) {
-    				body.html('<div class="error-summary">'+jqXHR.responseText+'</div>');
-    			}
-    		});
-        	return false;
+/**
+ * Modal CRUD for Yii2: loads pages into a Bootstrap 3/4/5 modal and submits their forms via AJAX.
+ * @link https://github.com/borodulin/yii2-gii-modal
+ */
+(function ($) {
+    'use strict';
+
+    // the script may be injected again together with an AJAX response
+    if (window.conquerGiiModal) {
+        return;
+    }
+    window.conquerGiiModal = true;
+
+    function showModal(modal) {
+        var bs = window.bootstrap;
+        if (typeof modal.modal === 'function') {
+            modal.modal('show');
+        } else if (bs && bs.Modal) {
+            // Bootstrap 5 without the jQuery interface
+            (bs.Modal.getInstance(modal[0]) || new bs.Modal(modal[0])).show();
         }
+    }
+
+    function setHeader(modal, text) {
+        var title = modal.find('.modal-title').first();
+        if (title.length === 0) {
+            title = $('<h4 class="modal-title"></h4>').prependTo(modal.find('.modal-header').first());
+        }
+        title.text(text);
+    }
+
+    function load(container, settings) {
+        $.ajax($.extend({
+            success: function (response) {
+                container.html(response);
+            },
+            error: function (jqXHR) {
+                // a successful save answers with X-Redirect, which yii.js follows
+                if (jqXHR.getResponseHeader('X-Redirect')) {
+                    return;
+                }
+                container.html($('<div class="error-summary"></div>').html(jqXHR.responseText));
+            }
+        }, settings));
+    }
+
+    $(document).on('click', '.show-modal', function (event) {
+        var link = $(this),
+            modal = $(link.attr('data-target')),
+            url = link.attr('data-url') || link.attr('href');
+        if (!url || modal.length === 0) {
+            return;
+        }
+        event.preventDefault();
+        setHeader(modal, link.attr('data-header') || '');
+        var body = modal.find('.modal-body').first().empty();
+        showModal(modal);
+        load(body, {url: url});
     });
-    $(document).on('submit', 'form[data-ajax]', function(event) {
-    	event.preventDefault();
-		var formData = new FormData(this);
-		var form = $(this);
-		var body = form.closest('.modal-body').empty();
-		// submit form
-		$.ajax({
-			url: form.attr('action'),
-			type: 'post',
-			enctype: 'multipart/form-data',
-			processData: false,  // tell jQuery not to process the data
-			contentType: false,   // tell jQuery not to set contentType
-			data: formData,
-			success: function (response) {
-				body.html(response);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				body.html('<div class="error-summary">'+jqXHR.responseText+'</div>');
-			}
-		});
-		return false;
-	});
-	$('body').on('click', 'a[data-ajax]', function () {
-		var self = $(this),
-			modal_body = self.closest('.modal-body').empty();
-		$.ajax({
-			url: self.attr('href'),
-			success: function (response) {
-				modal_body.html(response);
-			},
-			error: function (jqXHR) {
-				modal_body.html('<div class="error-summary">'+jqXHR.responseText+'</div>');
-			}
-		});
-		return false;
-	});
-});
+
+    $(document).on('submit', 'form[data-ajax]', function (event) {
+        var form = $(this),
+            body = form.closest('.modal-body');
+        // outside a modal (a page opened directly) the form is submitted normally
+        if (body.length === 0) {
+            return;
+        }
+        event.preventDefault();
+        var data = new FormData(this);
+        body.empty();
+        load(body, {
+            url: form.attr('action'),
+            type: form.attr('method') || 'post',
+            processData: false,
+            contentType: false,
+            data: data
+        });
+    });
+
+    $(document).on('click', 'a[data-ajax]', function (event) {
+        var link = $(this),
+            body = link.closest('.modal-body');
+        if (body.length === 0) {
+            return;
+        }
+        event.preventDefault();
+        body.empty();
+        load(body, {url: link.attr('href')});
+    });
+})(jQuery);
